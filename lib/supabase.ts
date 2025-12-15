@@ -25,8 +25,19 @@ export interface Minisite {
 export interface ThemeConfig {
   heroStyle?: 'centered' | 'split' | 'fullwidth' | 'minimal';
   blogLayout?: 'grid' | 'list' | 'masonry';
+  blogStyle?: 'cards' | 'minimal' | 'magazine' | 'compact';
   navStyle?: 'transparent' | 'solid' | 'floating';
+  navLayout?: 'standard' | 'centered' | 'minimal' | 'split' | 'stacked';
+  footerLayout?: 'standard' | 'centered' | 'minimal' | 'split' | 'stacked';
+  contactLayout?: 'standard' | 'split' | 'minimal' | 'card';
   mood?: string;
+  typography?: {
+    scale?: 'compact' | 'default' | 'large' | 'dramatic';
+    headingWeight?: 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold';
+    bodySize?: 'sm' | 'base' | 'lg';
+    letterSpacing?: 'tight' | 'normal' | 'wide';
+    lineHeight?: 'snug' | 'normal' | 'relaxed';
+  };
   images?: {
     hero?: string;
     about?: string;
@@ -47,7 +58,9 @@ export interface MinisitePage {
 }
 
 export interface ContentBlock {
-  type: 'hero' | 'text' | 'image' | 'cta' | 'features' | 'blogroll' | 'contact';
+  type: 'hero' | 'text' | 'image' | 'cta' | 'features' | 'blogroll' | 'contact' | 
+        'testimonials' | 'stats' | 'team' | 'faq' | 'timeline' | 
+        'pricing' | 'split' | 'banner' | 'logos';
   data: Record<string, any>;
 }
 
@@ -156,7 +169,7 @@ export async function getMinisiteArticle(minisiteId: string, slug: string): Prom
   return data;
 }
 
-// Submit contact form
+// Submit contact form to cta_leads table
 export async function submitContactForm(data: {
   name: string;
   email: string;
@@ -164,13 +177,23 @@ export async function submitContactForm(data: {
   message: string;
   minisite_id: string;
 }): Promise<boolean> {
-  const { error } = await supabase.functions.invoke('cta-submit', {
-    body: {
-      ...data,
-      source: 'minisite_contact'
-    }
-  });
+  const { error } = await supabase
+    .from('cta_leads')
+    .insert({
+      name: data.name,
+      email: data.email,
+      phone: data.phone || null,
+      message: data.message,
+      minisite_id: data.minisite_id,
+      source: 'minisite_contact',
+      created_at: new Date().toISOString()
+    });
 
-  return !error;
+  if (error) {
+    console.error('Error submitting contact form:', error);
+    return false;
+  }
+
+  return true;
 }
 

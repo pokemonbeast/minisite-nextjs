@@ -9,6 +9,19 @@
   --color-accent: 245 158 11;
   --font-heading: 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
+  
+  /* Typography scale (overridden per-site) */
+  --text-h1: clamp(2.5rem, 5vw, 4rem);
+  --text-h2: clamp(1.75rem, 3.5vw, 2.75rem);
+  --text-h3: clamp(1.375rem, 2.75vw, 2rem);
+  --text-h4: clamp(1.125rem, 2.25vw, 1.5rem);
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  
+  /* Typography styles */
+  --heading-weight: 700;
+  --letter-spacing: 0em;
+  --line-height: 1.6;
 }
 
 /* Utility classes for theme colors */
@@ -71,25 +84,44 @@
   font-family: var(--font-body);
 }
 
+/* Dynamic body text */
+body {
+  font-size: var(--text-body);
+  line-height: var(--line-height);
+  letter-spacing: var(--letter-spacing);
+}
+
 /* Article content styles */
 .article-content {
-  @apply prose prose-lg max-w-none;
+  @apply prose max-w-none;
+  font-size: var(--text-body);
+  line-height: var(--line-height);
 }
 
 .article-content h1 {
-  @apply text-3xl font-bold mb-6 font-heading;
+  font-size: var(--text-h1);
+  font-weight: var(--heading-weight);
+  font-family: var(--font-heading);
+  @apply mb-6;
 }
 
 .article-content h2 {
-  @apply text-2xl font-semibold mt-8 mb-4 font-heading;
+  font-size: var(--text-h2);
+  font-weight: var(--heading-weight);
+  font-family: var(--font-heading);
+  @apply mt-8 mb-4;
 }
 
 .article-content h3 {
-  @apply text-xl font-semibold mt-6 mb-3 font-heading;
+  font-size: var(--text-h3);
+  font-weight: var(--heading-weight);
+  font-family: var(--font-heading);
+  @apply mt-6 mb-3;
 }
 
 .article-content p {
-  @apply mb-4 leading-relaxed;
+  @apply mb-4;
+  line-height: var(--line-height);
 }
 
 .article-content a {

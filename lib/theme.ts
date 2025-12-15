@@ -7,8 +7,77 @@ function hexToRgb(hex: string): string {
   return `${parseInt(result[1], 16)} ${parseInt(result[2], 16)} ${parseInt(result[3], 16)}`;
 }
 
+// Typography scale configurations
+const typographyScales = {
+  compact: {
+    h1: 'clamp(2rem, 4vw, 3rem)',
+    h2: 'clamp(1.5rem, 3vw, 2.25rem)',
+    h3: 'clamp(1.25rem, 2.5vw, 1.75rem)',
+    h4: 'clamp(1.1rem, 2vw, 1.5rem)',
+    body: '0.9375rem',
+    small: '0.8125rem',
+  },
+  default: {
+    h1: 'clamp(2.5rem, 5vw, 4rem)',
+    h2: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+    h3: 'clamp(1.375rem, 2.75vw, 2rem)',
+    h4: 'clamp(1.125rem, 2.25vw, 1.5rem)',
+    body: '1rem',
+    small: '0.875rem',
+  },
+  large: {
+    h1: 'clamp(3rem, 6vw, 5rem)',
+    h2: 'clamp(2rem, 4vw, 3.5rem)',
+    h3: 'clamp(1.5rem, 3vw, 2.5rem)',
+    h4: 'clamp(1.25rem, 2.5vw, 1.75rem)',
+    body: '1.125rem',
+    small: '0.9375rem',
+  },
+  dramatic: {
+    h1: 'clamp(3.5rem, 8vw, 7rem)',
+    h2: 'clamp(2.25rem, 5vw, 4rem)',
+    h3: 'clamp(1.625rem, 3.5vw, 2.75rem)',
+    h4: 'clamp(1.25rem, 2.5vw, 2rem)',
+    body: '1.0625rem',
+    small: '0.875rem',
+  },
+};
+
+const headingWeights = {
+  normal: '400',
+  medium: '500',
+  semibold: '600',
+  bold: '700',
+  extrabold: '800',
+};
+
+const bodySizes = {
+  sm: '0.9375rem',
+  base: '1rem',
+  lg: '1.125rem',
+};
+
+const letterSpacings = {
+  tight: '-0.025em',
+  normal: '0em',
+  wide: '0.025em',
+};
+
+const lineHeights = {
+  snug: '1.4',
+  normal: '1.6',
+  relaxed: '1.8',
+};
+
 // Generate CSS variables from minisite config
 export function generateThemeVariables(minisite: Minisite): string {
+  const typography = minisite.theme_config?.typography || {};
+  const scale = typographyScales[typography.scale || 'default'];
+  const headingWeight = headingWeights[typography.headingWeight || 'bold'];
+  const bodySize = bodySizes[typography.bodySize || 'base'];
+  const letterSpacing = letterSpacings[typography.letterSpacing || 'normal'];
+  const lineHeight = lineHeights[typography.lineHeight || 'normal'];
+
   return `
     :root {
       --color-primary: ${hexToRgb(minisite.primary_color)};
@@ -16,6 +85,19 @@ export function generateThemeVariables(minisite: Minisite): string {
       --color-accent: ${hexToRgb(minisite.accent_color)};
       --font-heading: '${minisite.font_heading}', sans-serif;
       --font-body: '${minisite.font_body}', sans-serif;
+      
+      /* Typography scale */
+      --text-h1: ${scale.h1};
+      --text-h2: ${scale.h2};
+      --text-h3: ${scale.h3};
+      --text-h4: ${scale.h4};
+      --text-body: ${bodySize};
+      --text-small: ${scale.small};
+      
+      /* Typography styles */
+      --heading-weight: ${headingWeight};
+      --letter-spacing: ${letterSpacing};
+      --line-height: ${lineHeight};
     }
   `;
 }

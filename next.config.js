@@ -7,6 +7,11 @@ const nextConfig = {
         hostname: 'imagedelivery.net',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
     ],
   },
   // Allow any subdomain
