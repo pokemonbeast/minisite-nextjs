@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Variables for dynamic theming */
+:root {
+  --color-primary: 99 102 241;
+  --color-secondary: 139 92 246;
+  --color-accent: 245 158 11;
+  --font-heading: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* Utility classes for theme colors */
+.bg-primary {
+  background-color: rgb(var(--color-primary));
+}
+
+.bg-secondary {
+  background-color: rgb(var(--color-secondary));
+}
+
+.bg-accent {
+  background-color: rgb(var(--color-accent));
+}
+
+.text-primary {
+  color: rgb(var(--color-primary));
+}
+
+.text-secondary {
+  color: rgb(var(--color-secondary));
+}
+
+.text-accent {
+  color: rgb(var(--color-accent));
+}
+
+.border-primary {
+  border-color: rgb(var(--color-primary));
+}
+
+.border-secondary {
+  border-color: rgb(var(--color-secondary));
+}
+
+.border-accent {
+  border-color: rgb(var(--color-accent));
+}
+
+/* Hover variants */
+.hover\:bg-primary:hover {
+  background-color: rgb(var(--color-primary));
+}
+
+.hover\:text-primary:hover {
+  color: rgb(var(--color-primary));
+}
+
+/* Gradient utilities */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, rgb(var(--color-primary)), rgb(var(--color-secondary)));
+}
+
+/* Typography */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* Article content styles */
+.article-content {
+  @apply prose prose-lg max-w-none;
+}
+
+.article-content h1 {
+  @apply text-3xl font-bold mb-6 font-heading;
+}
+
+.article-content h2 {
+  @apply text-2xl font-semibold mt-8 mb-4 font-heading;
+}
+
+.article-content h3 {
+  @apply text-xl font-semibold mt-6 mb-3 font-heading;
+}
+
+.article-content p {
+  @apply mb-4 leading-relaxed;
+}
+
+.article-content a {
+  @apply text-primary underline hover:no-underline;
+}
+
+.article-content img {
+  @apply rounded-lg my-6;
+}
+
+.article-content ul,
+.article-content ol {
+  @apply my-4 pl-6;
+}
+
+.article-content li {
+  @apply mb-2;
+}
+
+/* Button styles */
+.btn-primary {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-all duration-200;
+  background-color: rgb(var(--color-primary));
+  color: white;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-all duration-200 border-2;
+  border-color: rgb(var(--color-primary));
+  color: rgb(var(--color-primary));
+}
+
+.btn-secondary:hover {
+  background-color: rgb(var(--color-primary));
+  color: white;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-shadow duration-200;
+}
+
+.card:hover {
+  @apply shadow-md;
+}
+
+/* Form styles */
+.form-input {
+  @apply w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 transition-colors;
+  --tw-ring-color: rgb(var(--color-primary) / 0.5);
+}
+
+.form-input:focus {
+  border-color: rgb(var(--color-primary));
+}
+
+/* Hero variations */
+.hero-overlay {
+  @apply absolute inset-0 bg-gradient-to-b from-black/60 to-black/30;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background-color: rgb(var(--color-primary) / 0.2);
+}
+
