@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // List of root domains where minisites are hosted
 const ROOT_DOMAINS = [
-  'minisites.yourdomain.com',
+  'autobloggingsites.io',
+  'www.autobloggingsites.io',
+  'minisite-nextjs.vercel.app',
   'localhost:3000',
   // Add more domains as needed
 ];
