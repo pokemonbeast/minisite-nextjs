@@ -69,10 +69,9 @@ function LatestArticlesSection({
                   {excerptContent && (
                     useHtmlExcerpt ? (
                       <div 
-                        className="text-gray-600 text-sm line-clamp-3 mb-4 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
-                        style={{ ['--primary' as any]: minisite.primary_color }}
+                        className="text-gray-600 text-sm line-clamp-3 mb-4 [&_a]:underline [&_a]:hover:opacity-80"
+                        style={{ color: '#4b5563' }}
                         dangerouslySetInnerHTML={{ __html: excerptContent }}
-                        onClick={(e) => e.stopPropagation()}
                       />
                     ) : (
                       <p className="text-gray-600 text-sm line-clamp-2 mb-4">{excerptContent}</p>
