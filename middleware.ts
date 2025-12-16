@@ -189,8 +189,8 @@ export const config = {
      * - api routes
      * - _next (Next.js internals)
      * - static files (images, etc.)
-     * Note: robots.txt is now handled by a route, so we DO match it
+     * Note: robots.txt and sitemap.xml are handled by routes, so we DO match them
      */
-    '/((?!api|_next|favicon.ico|sitemap.xml).*)',
+    '/((?!api|_next|favicon.ico).*)',
   ],
 };
