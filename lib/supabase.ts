@@ -169,7 +169,7 @@ export async function getMinisiteArticle(minisiteId: string, slug: string): Prom
   return data;
 }
 
-// Submit contact form to cta_leads table
+// Submit contact form to cta_submissions table
 export async function submitContactForm(data: {
   name: string;
   email: string;
@@ -178,15 +178,14 @@ export async function submitContactForm(data: {
   minisite_id: string;
 }): Promise<boolean> {
   const { error } = await supabase
-    .from('cta_leads')
+    .from('cta_submissions')
     .insert({
       name: data.name,
       email: data.email,
       phone: data.phone || null,
       message: data.message,
       minisite_id: data.minisite_id,
-      source: 'minisite_contact',
-      created_at: new Date().toISOString()
+      cta_type: 'contact_form'
     });
 
   if (error) {
