@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// List of root domains where minisites are hosted
+// List of root domains where minisites are hosted (NOT subdomains!)
 const ROOT_DOMAINS = [
   'autobloggingsites.io',
   'www.autobloggingsites.io',
-  'yobstech.autobloggingsites.io',
   'minisite-nextjs.vercel.app',
   'localhost:3000',
   'localhost',
-  // Add more domains as needed
 ];
 
 // Create Supabase client for edge function
