@@ -39,7 +39,7 @@ function LatestArticlesSection({
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.slice(0, 6).map((article) => {
+          {articles.map((article) => {
             const useHtmlExcerpt = includeExcerptLinks && article.link_excerpt;
             const excerptContent = useHtmlExcerpt ? article.link_excerpt : article.excerpt;
             
@@ -170,7 +170,8 @@ export default async function HomePage() {
   }
 
   const homePage = await getMinisitePage(minisite.id, 'home');
-  const articles = await getMinisiteArticles(minisite.id, 6);
+  const homepageArticlesCount = minisite.theme_config?.homepageArticlesCount || 6;
+  const articles = await getMinisiteArticles(minisite.id, homepageArticlesCount);
 
   // Filter out blogroll blocks from page content - we'll render articles separately
   const contentBlocksWithoutBlogroll = homePage?.content?.filter(
