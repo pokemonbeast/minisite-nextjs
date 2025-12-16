@@ -60,6 +60,8 @@ export function Navigation({ minisite }: NavigationProps) {
   const themeConfig = minisite.theme_config || {};
   const navStyle = themeConfig.navStyle || 'solid';
   const navLayout = themeConfig.navLayout || 'standard';
+  const logoDisplay = themeConfig.logoDisplay || 'withText';
+  const blogLabel = themeConfig.blogLabel || 'Blog';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -72,7 +74,7 @@ export function Navigation({ minisite }: NavigationProps) {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/about', label: 'About' },
-    { href: '/blog', label: 'Blog' },
+    { href: '/blog', label: blogLabel },
     { href: '/contact', label: 'Contact' },
   ];
 
@@ -110,15 +112,15 @@ export function Navigation({ minisite }: NavigationProps) {
   const renderNavContent = () => {
     switch (navLayout) {
       case 'centered':
-        return <CenteredNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen }} />;
+        return <CenteredNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, logoDisplay }} />;
       case 'minimal':
-        return <MinimalNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen }} />;
+        return <MinimalNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, logoDisplay }} />;
       case 'split':
-        return <SplitNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen }} />;
+        return <SplitNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, logoDisplay }} />;
       case 'stacked':
-        return <StackedNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, isScrolled }} />;
+        return <StackedNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, isScrolled, logoDisplay }} />;
       default:
-        return <StandardNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen }} />;
+        return <StandardNav {...{ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, logoDisplay }} />;
     }
   };
 
@@ -150,7 +152,7 @@ export function Navigation({ minisite }: NavigationProps) {
 }
 
 // Standard Navigation: Logo left, links right
-function StandardNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen }: any) {
+function StandardNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, logoDisplay }: any) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between h-24 py-4">
@@ -171,12 +173,14 @@ function StandardNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOp
               {minisite.name.charAt(0)}
             </div>
           )}
-          <span 
-            className={`font-semibold text-xl ${textColor}`}
-            style={{ fontFamily: 'var(--font-heading)' }}
-          >
-            {minisite.name}
-          </span>
+          {logoDisplay !== 'iconOnly' && (
+            <span 
+              className={`font-semibold text-xl ${textColor}`}
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {minisite.name}
+            </span>
+          )}
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
@@ -198,7 +202,7 @@ function StandardNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOp
 }
 
 // Centered Navigation: Logo centered with nav links on sides
-function CenteredNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen }: any) {
+function CenteredNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, logoDisplay }: any) {
   const leftLinks = navLinks.slice(0, 2);
   const rightLinks = navLinks.slice(2);
   
@@ -236,12 +240,14 @@ function CenteredNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOp
               {minisite.name.charAt(0)}
             </div>
           )}
-          <span 
-            className={`font-bold text-lg tracking-wider ${textColor}`}
-            style={{ fontFamily: 'var(--font-heading)' }}
-          >
-            {minisite.name}
-          </span>
+          {logoDisplay !== 'iconOnly' && (
+            <span 
+              className={`font-bold text-lg tracking-wider ${textColor}`}
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {minisite.name}
+            </span>
+          )}
         </Link>
 
         {/* Right links */}
@@ -264,7 +270,7 @@ function CenteredNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOp
 }
 
 // Minimal Navigation: Just logo and hamburger, clean look
-function MinimalNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen }: any) {
+function MinimalNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, logoDisplay }: any) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between h-16 py-2">
@@ -296,7 +302,7 @@ function MinimalNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpe
 }
 
 // Split Navigation: Logo left, primary CTA right with links in between
-function SplitNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen }: any) {
+function SplitNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, logoDisplay }: any) {
   const mainLinks = navLinks.slice(0, -1); // All except contact
   
   return (
@@ -319,12 +325,14 @@ function SplitNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen,
               {minisite.name.charAt(0)}
             </div>
           )}
-          <span 
-            className={`font-semibold text-lg hidden sm:block ${textColor}`}
-            style={{ fontFamily: 'var(--font-heading)' }}
-          >
-            {minisite.name}
-          </span>
+          {logoDisplay !== 'iconOnly' && (
+            <span 
+              className={`font-semibold text-lg hidden sm:block ${textColor}`}
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {minisite.name}
+            </span>
+          )}
         </Link>
 
         <div className="hidden md:flex items-center gap-10">
@@ -356,7 +364,7 @@ function SplitNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen,
 }
 
 // Stacked Navigation: Two rows - top with info/CTA, bottom with logo and links
-function StackedNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, isScrolled }: any) {
+function StackedNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen, isScrolled, logoDisplay }: any) {
   return (
     <div className={`transition-all duration-300 ${isScrolled ? 'py-0' : ''}`}>
       {/* Top bar - hidden when scrolled */}
@@ -392,12 +400,14 @@ function StackedNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpe
                   {minisite.name.charAt(0)}
                 </div>
               )}
-              <span 
-                className="font-bold text-xl text-gray-900"
-                style={{ fontFamily: 'var(--font-heading)' }}
-              >
-                {minisite.name}
-              </span>
+              {logoDisplay !== 'iconOnly' && (
+                <span 
+                  className="font-bold text-xl text-gray-900"
+                  style={{ fontFamily: 'var(--font-heading)' }}
+                >
+                  {minisite.name}
+                </span>
+              )}
             </Link>
 
             <div className="hidden md:flex items-center gap-1">

@@ -22,12 +22,14 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const blogPage = await getMinisitePage(minisite.id, 'blog');
+  const themeConfig = minisite.theme_config || {};
+  const blogLabel = themeConfig.blogLabel || 'Blog';
 
   return {
-    title: blogPage?.seo_title || `Blog | ${minisite.name}`,
+    title: blogPage?.seo_title || `${blogLabel} | ${minisite.name}`,
     description: blogPage?.seo_description || `Read the latest articles and insights from ${minisite.name}.`,
     openGraph: {
-      title: blogPage?.seo_title || `Blog | ${minisite.name}`,
+      title: blogPage?.seo_title || `${blogLabel} | ${minisite.name}`,
       description: blogPage?.seo_description || `Read the latest articles from ${minisite.name}`,
       siteName: minisite.name,
       type: 'website',
@@ -55,12 +57,13 @@ export default async function BlogPage() {
   const themeConfig = minisite.theme_config || {};
   const layout = themeConfig.blogLayout || 'grid';
   const blogStyle = themeConfig.blogStyle || 'cards';
+  const blogLabel = themeConfig.blogLabel || 'Blog';
 
   return (
     <>
       <Navigation minisite={minisite} />
       <main className="pt-24 pb-16">
-        <BlogHeader minisite={minisite} blogStyle={blogStyle} />
+        <BlogHeader minisite={minisite} blogStyle={blogStyle} blogLabel={blogLabel} />
         <BlogArticles minisite={minisite} articles={articles} layout={layout} blogStyle={blogStyle} />
       </main>
       <Footer minisite={minisite} />
@@ -69,7 +72,7 @@ export default async function BlogPage() {
 }
 
 // Blog Header - Different styles
-function BlogHeader({ minisite, blogStyle }: { minisite: Minisite; blogStyle: string }) {
+function BlogHeader({ minisite, blogStyle, blogLabel }: { minisite: Minisite; blogStyle: string; blogLabel: string }) {
   switch (blogStyle) {
     case 'minimal':
       return (
@@ -78,7 +81,7 @@ function BlogHeader({ minisite, blogStyle }: { minisite: Minisite; blogStyle: st
             className="text-3xl font-light"
             style={{ fontFamily: 'var(--font-heading)', letterSpacing: 'var(--letter-spacing)' }}
           >
-            Blog
+            {blogLabel}
           </h1>
         </div>
       );
@@ -94,7 +97,7 @@ function BlogHeader({ minisite, blogStyle }: { minisite: Minisite; blogStyle: st
               className="text-5xl md:text-6xl font-bold text-white mb-4"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              The Blog
+              {blogLabel === 'Articles' ? 'Our Articles' : 'The Blog'}
             </h1>
             <p className="text-white/80 text-xl max-w-2xl">
               Insights, stories, and updates from {minisite.name}
@@ -111,9 +114,9 @@ function BlogHeader({ minisite, blogStyle }: { minisite: Minisite; blogStyle: st
               className="text-2xl font-semibold"
               style={{ fontFamily: 'var(--font-heading)', color: minisite.primary_color }}
             >
-              Latest Articles
+              {blogLabel === 'Articles' ? 'Latest Articles' : 'Latest Posts'}
             </h1>
-            <span className="text-sm text-gray-500">All posts</span>
+            <span className="text-sm text-gray-500">All {blogLabel.toLowerCase()}</span>
           </div>
         </div>
       );
@@ -130,7 +133,7 @@ function BlogHeader({ minisite, blogStyle }: { minisite: Minisite; blogStyle: st
               color: minisite.primary_color 
             }}
           >
-            Blog
+            {blogLabel}
           </h1>
           <p className="text-xl text-gray-600" style={{ lineHeight: 'var(--line-height)' }}>
             Insights, updates, and more from {minisite.name}
