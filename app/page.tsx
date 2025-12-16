@@ -20,6 +20,10 @@ function LatestArticlesSection({
     return null;
   }
 
+  // Check if we should show link excerpts
+  const themeConfig = minisite.theme_config || {};
+  const includeExcerptLinks = themeConfig.contentSections?.includeExcerptLinks ?? false;
+
   return (
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,50 +39,64 @@ function LatestArticlesSection({
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.slice(0, 6).map((article) => (
-            <Link 
-              key={article.id}
-              href={`/blog/${article.slug}`}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow"
-            >
-              {article.featured_image && (
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src={article.featured_image}
-                    alt={article.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              )}
-              <div className="p-6">
-                <h3 
-                  className="text-lg font-semibold mb-2 group-hover:opacity-80 transition-opacity"
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
-                  {article.title}
-                </h3>
-                {article.excerpt && (
-                  <p className="text-gray-600 text-sm line-clamp-2 mb-4">{article.excerpt}</p>
+          {articles.slice(0, 6).map((article) => {
+            const useHtmlExcerpt = includeExcerptLinks && article.link_excerpt;
+            const excerptContent = useHtmlExcerpt ? article.link_excerpt : article.excerpt;
+            
+            return (
+              <Link 
+                key={article.id}
+                href={`/blog/${article.slug}`}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow"
+              >
+                {article.featured_image && (
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={article.featured_image}
+                      alt={article.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
                 )}
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">
-                    {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </span>
-                  <span 
-                    className="font-medium"
-                    style={{ color: minisite.primary_color }}
+                <div className="p-6">
+                  <h3 
+                    className="text-lg font-semibold mb-2 group-hover:opacity-80 transition-opacity"
+                    style={{ fontFamily: 'var(--font-heading)' }}
                   >
-                    Read more →
-                  </span>
+                    {article.title}
+                  </h3>
+                  {excerptContent && (
+                    useHtmlExcerpt ? (
+                      <div 
+                        className="text-gray-600 text-sm line-clamp-3 mb-4 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
+                        style={{ ['--primary' as any]: minisite.primary_color }}
+                        dangerouslySetInnerHTML={{ __html: excerptContent }}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <p className="text-gray-600 text-sm line-clamp-2 mb-4">{excerptContent}</p>
+                    )
+                  )}
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">
+                      {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </span>
+                    <span 
+                      className="font-medium"
+                      style={{ color: minisite.primary_color }}
+                    >
+                      Read more →
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
         {articles.length > 0 && (
           <div className="text-center mt-12">
