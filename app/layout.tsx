@@ -19,6 +19,8 @@ export default async function RootLayout({
   const cookieStore = cookies();
   
   const subdomain = headersList.get('x-subdomain') || cookieStore.get('subdomain')?.value || null;
+  const isCustomDomain = headersList.get('x-is-custom-domain') === 'true' || 
+    cookieStore.get('is_custom_domain')?.value === 'true';
   
   let minisite = null;
   let themeVariables = '';
@@ -32,9 +34,20 @@ export default async function RootLayout({
     }
   }
 
+  // Block indexing for *.autobloggingsites.io subdomains (not custom domains)
+  const shouldBlockIndexing = subdomain && !isCustomDomain;
+
   return (
     <html lang="en">
       <head>
+        {/* Block indexing for temporary subdomains */}
+        {shouldBlockIndexing && (
+          <>
+            <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+            <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+            <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+          </>
+        )}
         {fontsUrl && <link href={fontsUrl} rel="stylesheet" />}
         {themeVariables && (
           <style dangerouslySetInnerHTML={{ __html: themeVariables }} />
