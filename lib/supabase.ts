@@ -35,6 +35,7 @@ export interface ThemeConfig {
   footerLayout?: 'standard' | 'centered' | 'minimal' | 'split' | 'stacked';
   contactLayout?: 'standard' | 'split' | 'minimal' | 'card';
   mood?: string;
+  homepageArticlesCount?: number;
   typography?: {
     scale?: 'compact' | 'default' | 'large' | 'dramatic';
     headingWeight?: 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold';
