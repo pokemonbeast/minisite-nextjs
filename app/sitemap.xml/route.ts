@@ -15,16 +15,37 @@ const ROOT_DOMAINS = [
 export async function GET(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   
-  // Check if this is a subdomain of our platform (*.autobloggingsites.io)
-  const isTemporarySubdomain = ROOT_DOMAINS.some(domain => 
-    hostname.endsWith(`.${domain}`)
-  );
+  // Get subdomain from cookie/header (set by middleware)
+  const subdomain = request.cookies.get('subdomain')?.value ||
+    request.headers.get('x-subdomain');
   
-  // For temporary subdomains, return empty sitemap since they're noindexed
-  if (isTemporarySubdomain) {
+  // Check if this is a custom domain (set by middleware)
+  const isCustomDomain = request.cookies.get('is_custom_domain')?.value === 'true' ||
+    request.headers.get('x-is-custom-domain') === 'true';
+  
+  // If no subdomain found, can't generate sitemap
+  if (!subdomain) {
+    return new NextResponse('Sitemap not found', { status: 404 });
+  }
+  
+  // Look up the minisite to check if it has a custom domain
+  const { data: minisiteCheck } = await supabase
+    .from('minisites')
+    .select('custom_domain, custom_domain_status')
+    .eq('subdomain', subdomain)
+    .eq('status', 'active')
+    .single();
+  
+  // Determine if this is a custom domain request
+  const hasActiveCustomDomain = minisiteCheck?.custom_domain && 
+    minisiteCheck?.custom_domain_status === 'active';
+  
+  // For subdomain-only sites (no custom domain), return empty sitemap
+  // since they're noindexed anyway
+  if (!hasActiveCustomDomain && !isCustomDomain) {
     const emptySitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Sitemap not available for temporary subdomains. Host: ${hostname} -->
+  <!-- Sitemap not available for temporary subdomains -->
 </urlset>`;
     
     return new NextResponse(emptySitemap, {
@@ -34,29 +55,6 @@ export async function GET(request: NextRequest) {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
-  }
-  
-  // For custom domains, look up by the domain itself
-  // Get subdomain from cookie/header (set by middleware) or try to find by custom domain
-  let subdomain = request.cookies.get('subdomain')?.value ||
-    request.headers.get('x-subdomain');
-  
-  // If no subdomain but we have a hostname, try to find minisite by custom_domain
-  if (!subdomain && hostname) {
-    const { data: minisiteByDomain } = await supabase
-      .from('minisites')
-      .select('subdomain')
-      .eq('custom_domain', hostname.replace('www.', ''))
-      .eq('status', 'active')
-      .single();
-    
-    if (minisiteByDomain) {
-      subdomain = minisiteByDomain.subdomain;
-    }
-  }
-  
-  if (!subdomain) {
-    return new NextResponse('Sitemap not found', { status: 404 });
   }
   
   try {
@@ -167,7 +165,7 @@ export async function GET(request: NextRequest) {
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  <!-- Generated sitemap for ${minisite.name} - Host: ${hostname} -->${urls}
+  <!-- Generated sitemap for ${minisite.name} -->${urls}
 </urlset>`;
     
     return new NextResponse(sitemap, {
