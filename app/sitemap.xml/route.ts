@@ -24,14 +24,14 @@ export async function GET(request: NextRequest) {
   if (isTemporarySubdomain) {
     const emptySitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Sitemap not available for temporary subdomains -->
+  <!-- Sitemap not available for temporary subdomains. Host: ${hostname} -->
 </urlset>`;
     
     return new NextResponse(emptySitemap, {
       status: 200,
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
   }
@@ -167,14 +167,14 @@ export async function GET(request: NextRequest) {
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  <!-- Generated sitemap for ${minisite.name} -->${urls}
+  <!-- Generated sitemap for ${minisite.name} - Host: ${hostname} -->${urls}
 </urlset>`;
     
     return new NextResponse(sitemap, {
       status: 200,
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600, s-maxage=3600', // Cache for 1 hour
+        'Cache-Control': 'public, max-age=300, s-maxage=300', // Cache for 5 minutes
       },
     });
     
