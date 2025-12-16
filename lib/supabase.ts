@@ -11,6 +11,8 @@ export interface Minisite {
   name: string;
   subdomain: string;
   full_domain: string;
+  custom_domain: string | null;
+  custom_domain_status: 'pending' | 'verifying' | 'active' | 'failed' | null;
   description: string;
   logo_url: string | null;
   primary_color: string;
@@ -93,6 +95,75 @@ export async function getMinisiteBySubdomain(subdomain: string): Promise<Minisit
   }
 
   return data;
+}
+
+// Fetch minisite by custom domain
+export async function getMinisiteByCustomDomain(customDomain: string): Promise<Minisite | null> {
+  // Normalize the domain (remove www. prefix if present)
+  const normalizedDomain = customDomain.toLowerCase().replace(/^www\./, '');
+  
+  const { data, error } = await supabase
+    .from('minisites')
+    .select('*')
+    .eq('custom_domain', normalizedDomain)
+    .eq('custom_domain_status', 'active')
+    .eq('status', 'active')
+    .single();
+
+  if (error || !data) {
+    // Also try with www. prefix in case it was stored that way
+    const { data: dataWithWww, error: errorWithWww } = await supabase
+      .from('minisites')
+      .select('*')
+      .eq('custom_domain', `www.${normalizedDomain}`)
+      .eq('custom_domain_status', 'active')
+      .eq('status', 'active')
+      .single();
+      
+    if (errorWithWww || !dataWithWww) {
+      console.error('Error fetching minisite by custom domain:', error);
+      return null;
+    }
+    
+    return dataWithWww;
+  }
+
+  return data;
+}
+
+// Fetch minisite by hostname (tries subdomain first, then custom domain)
+export async function getMinisiteByHostname(hostname: string): Promise<{ minisite: Minisite | null; isCustomDomain: boolean }> {
+  // List of root domains where minisites are hosted
+  const ROOT_DOMAINS = [
+    'autobloggingsites.io',
+    'yobstech.autobloggingsites.io',
+    'minisite-nextjs.vercel.app',
+    'localhost',
+  ];
+  
+  // Check if this is one of our root domains
+  const isRootDomain = ROOT_DOMAINS.some(domain => 
+    hostname === domain || hostname === `www.${domain}`
+  );
+  
+  if (isRootDomain) {
+    return { minisite: null, isCustomDomain: false };
+  }
+  
+  // Check if this is a subdomain of our root domain
+  for (const rootDomain of ROOT_DOMAINS) {
+    if (hostname.endsWith(`.${rootDomain}`)) {
+      const subdomain = hostname.replace(`.${rootDomain}`, '');
+      if (subdomain && !subdomain.includes('.')) {
+        const minisite = await getMinisiteBySubdomain(subdomain);
+        return { minisite, isCustomDomain: false };
+      }
+    }
+  }
+  
+  // This must be a custom domain
+  const minisite = await getMinisiteByCustomDomain(hostname);
+  return { minisite, isCustomDomain: true };
 }
 
 // Fetch minisite pages

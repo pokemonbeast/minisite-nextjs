@@ -11,7 +11,7 @@ function LogoImage({
   alt, 
   fallbackInitial,
   primaryColor,
-  size = 56
+  size = 80
 }: { 
   src: string; 
   alt: string; 
@@ -153,7 +153,7 @@ export function Navigation({ minisite }: NavigationProps) {
 function StandardNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen, setIsMobileMenuOpen }: any) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center justify-between h-18 py-3">
+      <div className="flex items-center justify-between h-24 py-4">
         <Link href="/" className="flex items-center gap-3">
           {minisite.logo_url ? (
             <LogoImage
@@ -161,10 +161,11 @@ function StandardNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOp
               alt={minisite.name}
               fallbackInitial={minisite.name.charAt(0)}
               primaryColor={minisite.primary_color}
+              size={80}
             />
           ) : (
             <div 
-              className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl"
+              className="w-20 h-20 rounded-lg flex items-center justify-center text-white font-bold text-2xl"
               style={{ backgroundColor: minisite.primary_color }}
             >
               {minisite.name.charAt(0)}
@@ -203,7 +204,7 @@ function CenteredNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOp
   
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center justify-between h-20 py-3">
+      <div className="flex items-center justify-between h-28 py-4">
         {/* Left links */}
         <div className="hidden md:flex items-center gap-8 flex-1">
           {leftLinks.map((link: any) => (
@@ -225,11 +226,11 @@ function CenteredNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOp
               alt={minisite.name}
               fallbackInitial={minisite.name.charAt(0)}
               primaryColor={minisite.primary_color}
-              size={48}
+              size={72}
             />
           ) : (
             <div 
-              className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
+              className="w-[72px] h-[72px] rounded-full flex items-center justify-center text-white font-bold text-xl"
               style={{ backgroundColor: minisite.primary_color }}
             >
               {minisite.name.charAt(0)}
@@ -300,7 +301,7 @@ function SplitNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen,
   
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center justify-between h-20 py-3">
+      <div className="flex items-center justify-between h-24 py-4">
         <Link href="/" className="flex items-center gap-3">
           {minisite.logo_url ? (
             <LogoImage
@@ -308,11 +309,11 @@ function SplitNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpen,
               alt={minisite.name}
               fallbackInitial={minisite.name.charAt(0)}
               primaryColor={minisite.primary_color}
-              size={44}
+              size={68}
             />
           ) : (
             <div 
-              className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold"
+              className="w-[68px] h-[68px] rounded-xl flex items-center justify-center text-white font-bold text-xl"
               style={{ backgroundColor: minisite.primary_color }}
             >
               {minisite.name.charAt(0)}
@@ -373,7 +374,7 @@ function StackedNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpe
       {/* Main nav */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 py-2">
+          <div className="flex items-center justify-between h-20 py-3">
             <Link href="/" className="flex items-center gap-3">
               {minisite.logo_url ? (
                 <LogoImage
@@ -381,11 +382,11 @@ function StackedNav({ minisite, navLinks, textColor, hoverColor, isMobileMenuOpe
                   alt={minisite.name}
                   fallbackInitial={minisite.name.charAt(0)}
                   primaryColor={minisite.primary_color}
-                  size={40}
+                  size={64}
                 />
               ) : (
                 <div 
-                  className="w-10 h-10 rounded flex items-center justify-center text-white font-bold"
+                  className="w-16 h-16 rounded flex items-center justify-center text-white font-bold text-xl"
                   style={{ backgroundColor: minisite.primary_color }}
                 >
                   {minisite.name.charAt(0)}
