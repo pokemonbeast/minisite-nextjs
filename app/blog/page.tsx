@@ -182,6 +182,12 @@ function BlogArticles({
 
 // Cards Style Blog List
 function CardsBlogList({ minisite, articles, layout, includeExcerptLinks }: { minisite: Minisite; articles: MinisiteArticle[]; layout: string; includeExcerptLinks: boolean }) {
+  // Debug: log excerpt settings
+  if (typeof window === 'undefined') {
+    console.log('[Blog] includeExcerptLinks:', includeExcerptLinks);
+    console.log('[Blog] First article link_excerpt:', articles[0]?.link_excerpt?.slice(0, 50));
+  }
+  
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className={
