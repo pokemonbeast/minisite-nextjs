@@ -58,13 +58,14 @@ export default async function BlogPage() {
   const layout = themeConfig.blogLayout || 'grid';
   const blogStyle = themeConfig.blogStyle || 'cards';
   const blogLabel = themeConfig.blogLabel || 'Blog';
+  const includeExcerptLinks = themeConfig.contentSections?.includeExcerptLinks ?? false;
 
   return (
     <>
       <Navigation minisite={minisite} />
       <main className="pt-24 pb-16">
         <BlogHeader minisite={minisite} blogStyle={blogStyle} blogLabel={blogLabel} />
-        <BlogArticles minisite={minisite} articles={articles} layout={layout} blogStyle={blogStyle} />
+        <BlogArticles minisite={minisite} articles={articles} layout={layout} blogStyle={blogStyle} includeExcerptLinks={includeExcerptLinks} />
       </main>
       <Footer minisite={minisite} />
     </>
@@ -148,12 +149,14 @@ function BlogArticles({
   minisite, 
   articles, 
   layout, 
-  blogStyle 
+  blogStyle,
+  includeExcerptLinks
 }: { 
   minisite: Minisite; 
   articles: MinisiteArticle[]; 
   layout: string;
   blogStyle: string;
+  includeExcerptLinks: boolean;
 }) {
   if (articles.length === 0) {
     return (
@@ -167,18 +170,18 @@ function BlogArticles({
 
   switch (blogStyle) {
     case 'minimal':
-      return <MinimalBlogList minisite={minisite} articles={articles} />;
+      return <MinimalBlogList minisite={minisite} articles={articles} includeExcerptLinks={includeExcerptLinks} />;
     case 'magazine':
-      return <MagazineBlogList minisite={minisite} articles={articles} layout={layout} />;
+      return <MagazineBlogList minisite={minisite} articles={articles} layout={layout} includeExcerptLinks={includeExcerptLinks} />;
     case 'compact':
-      return <CompactBlogList minisite={minisite} articles={articles} />;
+      return <CompactBlogList minisite={minisite} articles={articles} includeExcerptLinks={includeExcerptLinks} />;
     default:
-      return <CardsBlogList minisite={minisite} articles={articles} layout={layout} />;
+      return <CardsBlogList minisite={minisite} articles={articles} layout={layout} includeExcerptLinks={includeExcerptLinks} />;
   }
 }
 
 // Cards Style Blog List
-function CardsBlogList({ minisite, articles, layout }: { minisite: Minisite; articles: MinisiteArticle[]; layout: string }) {
+function CardsBlogList({ minisite, articles, layout, includeExcerptLinks }: { minisite: Minisite; articles: MinisiteArticle[]; layout: string; includeExcerptLinks: boolean }) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className={
@@ -186,96 +189,125 @@ function CardsBlogList({ minisite, articles, layout }: { minisite: Minisite; art
         layout === 'masonry' ? 'columns-1 md:columns-2 lg:columns-3 gap-8' :
         'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
       }>
-        {articles.map((article) => (
-          <Link 
-            key={article.id}
-            href={`/blog/${article.slug}`}
-            className={`card group ${layout === 'masonry' ? 'break-inside-avoid mb-8' : ''}`}
-          >
-            {article.featured_image && (
-              <div className="relative h-56 overflow-hidden">
-                <Image
-                  src={article.featured_image}
-                  alt={article.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            )}
-            <div className="p-6">
-              <h2 
-                className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors"
-                style={{ fontFamily: 'var(--font-heading)' }}
-              >
-                {article.title}
-              </h2>
-              {article.excerpt && (
-                <p className="text-gray-600 line-clamp-3 mb-4">{article.excerpt}</p>
+        {articles.map((article) => {
+          const useHtmlExcerpt = includeExcerptLinks && article.link_excerpt;
+          const excerptContent = useHtmlExcerpt ? article.link_excerpt : article.excerpt;
+          
+          return (
+            <Link 
+              key={article.id}
+              href={`/blog/${article.slug}`}
+              className={`card group ${layout === 'masonry' ? 'break-inside-avoid mb-8' : ''}`}
+            >
+              {article.featured_image && (
+                <div className="relative h-56 overflow-hidden">
+                  <Image
+                    src={article.featured_image}
+                    alt={article.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
               )}
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>
-                  {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </span>
-                <span 
-                  className="font-medium transition-colors"
-                  style={{ color: minisite.primary_color }}
+              <div className="p-6">
+                <h2 
+                  className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors"
+                  style={{ fontFamily: 'var(--font-heading)' }}
                 >
-                  Read more →
-                </span>
+                  {article.title}
+                </h2>
+                {excerptContent && (
+                  useHtmlExcerpt ? (
+                    <div 
+                      className="text-gray-600 line-clamp-3 mb-4 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
+                      dangerouslySetInnerHTML={{ __html: excerptContent }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <p className="text-gray-600 line-clamp-3 mb-4">{excerptContent}</p>
+                  )
+                )}
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <span>
+                    {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                  <span 
+                    className="font-medium transition-colors"
+                    style={{ color: minisite.primary_color }}
+                  >
+                    Read more →
+                  </span>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 // Minimal Style Blog List
-function MinimalBlogList({ minisite, articles }: { minisite: Minisite; articles: MinisiteArticle[] }) {
+function MinimalBlogList({ minisite, articles, includeExcerptLinks }: { minisite: Minisite; articles: MinisiteArticle[]; includeExcerptLinks: boolean }) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="divide-y divide-gray-100">
-        {articles.map((article) => (
-          <Link 
-            key={article.id}
-            href={`/blog/${article.slug}`}
-            className="block py-8 group"
-          >
-            <div className="flex items-start justify-between gap-8">
-              <div className="flex-1">
-                <h2 
-                  className="text-xl font-medium mb-2 group-hover:opacity-70 transition-opacity"
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
-                  {article.title}
-                </h2>
-                {article.excerpt && (
-                  <p className="text-gray-500 line-clamp-2">{article.excerpt}</p>
-                )}
+        {articles.map((article) => {
+          const useHtmlExcerpt = includeExcerptLinks && article.link_excerpt;
+          const excerptContent = useHtmlExcerpt ? article.link_excerpt : article.excerpt;
+          
+          return (
+            <Link 
+              key={article.id}
+              href={`/blog/${article.slug}`}
+              className="block py-8 group"
+            >
+              <div className="flex items-start justify-between gap-8">
+                <div className="flex-1">
+                  <h2 
+                    className="text-xl font-medium mb-2 group-hover:opacity-70 transition-opacity"
+                    style={{ fontFamily: 'var(--font-heading)' }}
+                  >
+                    {article.title}
+                  </h2>
+                  {excerptContent && (
+                    useHtmlExcerpt ? (
+                      <div 
+                        className="text-gray-500 line-clamp-2 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
+                        dangerouslySetInnerHTML={{ __html: excerptContent }}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <p className="text-gray-500 line-clamp-2">{excerptContent}</p>
+                    )
+                  )}
+                </div>
+                <span className="text-sm text-gray-400 whitespace-nowrap">
+                  {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </span>
               </div>
-              <span className="text-sm text-gray-400 whitespace-nowrap">
-                {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </span>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
 }
 
 // Magazine Style Blog List
-function MagazineBlogList({ minisite, articles, layout }: { minisite: Minisite; articles: MinisiteArticle[]; layout: string }) {
+function MagazineBlogList({ minisite, articles, layout, includeExcerptLinks }: { minisite: Minisite; articles: MinisiteArticle[]; layout: string; includeExcerptLinks: boolean }) {
   const featuredArticle = articles[0];
   const remainingArticles = articles.slice(1);
+  
+  const useFeaturedHtmlExcerpt = includeExcerptLinks && featuredArticle?.link_excerpt;
+  const featuredExcerpt = useFeaturedHtmlExcerpt ? featuredArticle.link_excerpt : featuredArticle?.excerpt;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -309,8 +341,16 @@ function MagazineBlogList({ minisite, articles, layout }: { minisite: Minisite; 
               >
                 {featuredArticle.title}
               </h2>
-              {featuredArticle.excerpt && (
-                <p className="text-gray-600 text-lg mb-4 line-clamp-3">{featuredArticle.excerpt}</p>
+              {featuredExcerpt && (
+                useFeaturedHtmlExcerpt ? (
+                  <div 
+                    className="text-gray-600 text-lg mb-4 line-clamp-3 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
+                    dangerouslySetInnerHTML={{ __html: featuredExcerpt }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <p className="text-gray-600 text-lg mb-4 line-clamp-3">{featuredExcerpt}</p>
+                )
               )}
               <span className="text-sm text-gray-500">
                 {featuredArticle.published_at && new Date(featuredArticle.published_at).toLocaleDateString('en-US', {
@@ -364,48 +404,63 @@ function MagazineBlogList({ minisite, articles, layout }: { minisite: Minisite; 
 }
 
 // Compact Style Blog List
-function CompactBlogList({ minisite, articles }: { minisite: Minisite; articles: MinisiteArticle[] }) {
+function CompactBlogList({ minisite, articles, includeExcerptLinks }: { minisite: Minisite; articles: MinisiteArticle[]; includeExcerptLinks: boolean }) {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="space-y-4">
-        {articles.map((article) => (
-          <Link 
-            key={article.id}
-            href={`/blog/${article.slug}`}
-            className="flex items-center gap-6 p-4 rounded-lg hover:bg-gray-50 transition-colors group"
-          >
-            {article.featured_image && (
-              <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
-                <Image
-                  src={article.featured_image}
-                  alt={article.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <h3 
-                className="font-semibold mb-1 truncate group-hover:opacity-70 transition-opacity"
-                style={{ fontFamily: 'var(--font-heading)' }}
-              >
-                {article.title}
-              </h3>
-              <p className="text-sm text-gray-500 line-clamp-1">{article.excerpt}</p>
-            </div>
-            <span className="text-xs text-gray-400 whitespace-nowrap hidden sm:block">
-              {article.published_at && new Date(article.published_at).toLocaleDateString()}
-            </span>
-            <svg 
-              className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
+        {articles.map((article) => {
+          const useHtmlExcerpt = includeExcerptLinks && article.link_excerpt;
+          const excerptContent = useHtmlExcerpt ? article.link_excerpt : article.excerpt;
+          
+          return (
+            <Link 
+              key={article.id}
+              href={`/blog/${article.slug}`}
+              className="flex items-center gap-6 p-4 rounded-lg hover:bg-gray-50 transition-colors group"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        ))}
+              {article.featured_image && (
+                <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                  <Image
+                    src={article.featured_image}
+                    alt={article.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h3 
+                  className="font-semibold mb-1 truncate group-hover:opacity-70 transition-opacity"
+                  style={{ fontFamily: 'var(--font-heading)' }}
+                >
+                  {article.title}
+                </h3>
+                {excerptContent && (
+                  useHtmlExcerpt ? (
+                    <div 
+                      className="text-sm text-gray-500 line-clamp-1 [&_a]:text-primary [&_a]:underline"
+                      dangerouslySetInnerHTML={{ __html: excerptContent }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-500 line-clamp-1">{excerptContent}</p>
+                  )
+                )}
+              </div>
+              <span className="text-xs text-gray-400 whitespace-nowrap hidden sm:block">
+                {article.published_at && new Date(article.published_at).toLocaleDateString()}
+              </span>
+              <svg 
+                className="w-5 h-5 text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

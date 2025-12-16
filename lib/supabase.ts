@@ -28,8 +28,10 @@ export interface ThemeConfig {
   heroStyle?: 'centered' | 'split' | 'fullwidth' | 'minimal';
   blogLayout?: 'grid' | 'list' | 'masonry';
   blogStyle?: 'cards' | 'minimal' | 'magazine' | 'compact';
+  blogLabel?: 'Blog' | 'Articles';
   navStyle?: 'transparent' | 'solid' | 'floating';
   navLayout?: 'standard' | 'centered' | 'minimal' | 'split' | 'stacked';
+  logoDisplay?: 'withText' | 'iconOnly';
   footerLayout?: 'standard' | 'centered' | 'minimal' | 'split' | 'stacked';
   contactLayout?: 'standard' | 'split' | 'minimal' | 'card';
   mood?: string;
@@ -39,6 +41,9 @@ export interface ThemeConfig {
     bodySize?: 'sm' | 'base' | 'lg';
     letterSpacing?: 'tight' | 'normal' | 'wide';
     lineHeight?: 'snug' | 'normal' | 'relaxed';
+  };
+  contentSections?: {
+    includeExcerptLinks?: boolean;
   };
   images?: {
     hero?: string;
@@ -73,6 +78,7 @@ export interface MinisiteArticle {
   slug: string;
   content: string;
   excerpt: string | null;
+  link_excerpt: string | null;
   featured_image: string | null;
   status: 'draft' | 'published' | 'archived';
   published_at: string | null;

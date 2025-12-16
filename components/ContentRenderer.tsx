@@ -422,12 +422,23 @@ function BlogrollBlock({ data, minisite, articles }: { data: any; minisite: Mini
   const themeConfig = minisite.theme_config || {};
   const layout = data.layout || themeConfig.blogLayout || 'grid';
   const limit = data.limit || 6;
+  const includeExcerptLinks = themeConfig.contentSections?.includeExcerptLinks ?? false;
   
   const displayArticles = articles.slice(0, limit);
   
   if (displayArticles.length === 0) {
     return null;
   }
+
+  // Helper to get the appropriate excerpt
+  const getExcerpt = (article: MinisiteArticle) => {
+    if (includeExcerptLinks && article.link_excerpt) {
+      // Return the HTML with the link
+      return article.link_excerpt;
+    }
+    // Return plain text excerpt
+    return article.excerpt;
+  };
 
   return (
     <section className="py-20">
@@ -445,41 +456,54 @@ function BlogrollBlock({ data, minisite, articles }: { data: any; minisite: Mini
           layout === 'masonry' ? 'columns-1 md:columns-2 lg:columns-3 gap-6' :
           'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
         }>
-          {displayArticles.map((article) => (
-            <Link 
-              key={article.id}
-              href={`/blog/${article.slug}`}
-              className={`card group ${layout === 'masonry' ? 'break-inside-avoid mb-6' : ''}`}
-            >
-              {article.featured_image && (
-                <div className="relative h-48 overflow-hidden">
-                  <SafeImage
-                    src={article.featured_image}
-                    alt={article.title}
-                    fill
-                    fallbackType="article"
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              )}
-              <div className="p-5">
-                <h3 
-                  className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors"
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
-                  {article.title}
-                </h3>
-                {article.excerpt && (
-                  <p className="text-gray-600 text-sm line-clamp-2">{article.excerpt}</p>
+          {displayArticles.map((article) => {
+            const excerptContent = getExcerpt(article);
+            const isHtmlExcerpt = includeExcerptLinks && article.link_excerpt;
+            
+            return (
+              <Link 
+                key={article.id}
+                href={`/blog/${article.slug}`}
+                className={`card group ${layout === 'masonry' ? 'break-inside-avoid mb-6' : ''}`}
+              >
+                {article.featured_image && (
+                  <div className="relative h-48 overflow-hidden">
+                    <SafeImage
+                      src={article.featured_image}
+                      alt={article.title}
+                      fill
+                      fallbackType="article"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
                 )}
-                <div className="mt-4 flex items-center text-sm text-gray-500">
-                  <span>
-                    {article.published_at && new Date(article.published_at).toLocaleDateString()}
-                  </span>
+                <div className="p-5">
+                  <h3 
+                    className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors"
+                    style={{ fontFamily: 'var(--font-heading)' }}
+                  >
+                    {article.title}
+                  </h3>
+                  {excerptContent && (
+                    isHtmlExcerpt ? (
+                      <div 
+                        className="text-gray-600 text-sm line-clamp-3 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
+                        dangerouslySetInnerHTML={{ __html: excerptContent }}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <p className="text-gray-600 text-sm line-clamp-2">{excerptContent}</p>
+                    )
+                  )}
+                  <div className="mt-4 flex items-center text-sm text-gray-500">
+                    <span>
+                      {article.published_at && new Date(article.published_at).toLocaleDateString()}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
         <div className="text-center mt-12">
           <Link
