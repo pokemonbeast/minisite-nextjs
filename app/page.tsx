@@ -69,7 +69,7 @@ function LatestArticlesSection({
                   {excerptContent && (
                     useHtmlExcerpt ? (
                       <div 
-                        className="text-gray-600 text-sm line-clamp-3 mb-4 [&_a]:underline [&_a]:hover:opacity-80"
+                        className="text-gray-600 text-sm mb-4 [&_a]:underline [&_a]:hover:opacity-80"
                         style={{ color: '#4b5563' }}
                         dangerouslySetInnerHTML={{ __html: excerptContent }}
                       />
