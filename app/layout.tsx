@@ -48,6 +48,10 @@ export default async function RootLayout({
             <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
           </>
         )}
+        {/* Favicon - use favicon_url, fallback to logo_url */}
+        {(minisite?.favicon_url || minisite?.logo_url) && (
+          <link rel="icon" href={minisite.favicon_url || minisite.logo_url || ''} />
+        )}
         {fontsUrl && <link href={fontsUrl} rel="stylesheet" />}
         {themeVariables && (
           <style dangerouslySetInnerHTML={{ __html: themeVariables }} />
