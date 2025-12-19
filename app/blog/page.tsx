@@ -227,7 +227,7 @@ function CardsBlogList({ minisite, articles, layout, includeExcerptLinks }: { mi
                   )
                 )}
                 <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>
+                  <span suppressHydrationWarning>
                     {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
@@ -284,7 +284,7 @@ function MinimalBlogList({ minisite, articles, includeExcerptLinks }: { minisite
                   )
                 )}
                 </div>
-                <span className="text-sm text-gray-400 whitespace-nowrap">
+                <span className="text-sm text-gray-400 whitespace-nowrap" suppressHydrationWarning>
                   {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric'
@@ -349,7 +349,7 @@ function MagazineBlogList({ minisite, articles, layout, includeExcerptLinks }: {
                   <p className="text-gray-600 text-lg mb-4 line-clamp-3">{featuredExcerpt}</p>
                 )
               )}
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500" suppressHydrationWarning>
                 {featuredArticle.published_at && new Date(featuredArticle.published_at).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -389,7 +389,7 @@ function MagazineBlogList({ minisite, articles, layout, includeExcerptLinks }: {
               >
                 {article.title}
               </h3>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500" suppressHydrationWarning>
                 {article.published_at && new Date(article.published_at).toLocaleDateString()}
               </span>
             </Link>
@@ -443,7 +443,7 @@ function CompactBlogList({ minisite, articles, includeExcerptLinks }: { minisite
                 )
               )}
               </div>
-              <span className="text-xs text-gray-400 whitespace-nowrap hidden sm:block">
+              <span className="text-xs text-gray-400 whitespace-nowrap hidden sm:block" suppressHydrationWarning>
                 {article.published_at && new Date(article.published_at).toLocaleDateString()}
               </span>
               <svg 

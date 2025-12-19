@@ -73,7 +73,7 @@ export default async function TermsPage() {
           )}
           
           <div className="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-500">
-            <p>Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p suppressHydrationWarning>Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
         </div>
       </main>
@@ -81,5 +81,7 @@ export default async function TermsPage() {
     </>
   );
 }
+
+
 
 

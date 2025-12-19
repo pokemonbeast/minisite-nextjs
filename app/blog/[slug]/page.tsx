@@ -93,7 +93,7 @@ export default async function ArticlePage({ params }: Props) {
 
             <div className="flex items-center gap-4 text-gray-500">
               {article.published_at && (
-                <time dateTime={article.published_at}>
+                <time dateTime={article.published_at} suppressHydrationWarning>
                   {new Date(article.published_at).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -181,5 +181,7 @@ export default async function ArticlePage({ params }: Props) {
     </>
   );
 }
+
+
 
 

@@ -78,7 +78,7 @@ function LatestArticlesSection({
                     )
                   )}
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">
+                    <span className="text-gray-500" suppressHydrationWarning>
                       {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
