@@ -221,7 +221,6 @@ function CardsBlogList({ minisite, articles, layout, includeExcerptLinks }: { mi
                     <div 
                       className="text-gray-600 line-clamp-3 mb-4 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
                       dangerouslySetInnerHTML={{ __html: excerptContent }}
-                      onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
                     <p className="text-gray-600 line-clamp-3 mb-4">{excerptContent}</p>
@@ -274,17 +273,16 @@ function MinimalBlogList({ minisite, articles, includeExcerptLinks }: { minisite
                   >
                     {article.title}
                   </h2>
-                  {excerptContent && (
-                    useHtmlExcerpt ? (
-                      <div 
-                        className="text-gray-500 line-clamp-2 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
-                        dangerouslySetInnerHTML={{ __html: excerptContent }}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    ) : (
-                      <p className="text-gray-500 line-clamp-2">{excerptContent}</p>
-                    )
-                  )}
+                {excerptContent && (
+                  useHtmlExcerpt ? (
+                    <div 
+                      className="text-gray-500 line-clamp-2 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
+                      dangerouslySetInnerHTML={{ __html: excerptContent }}
+                    />
+                  ) : (
+                    <p className="text-gray-500 line-clamp-2">{excerptContent}</p>
+                  )
+                )}
                 </div>
                 <span className="text-sm text-gray-400 whitespace-nowrap">
                   {article.published_at && new Date(article.published_at).toLocaleDateString('en-US', {
@@ -346,7 +344,6 @@ function MagazineBlogList({ minisite, articles, layout, includeExcerptLinks }: {
                   <div 
                     className="text-gray-600 text-lg mb-4 line-clamp-3 [&_a]:text-primary [&_a]:underline [&_a]:hover:opacity-80"
                     dangerouslySetInnerHTML={{ __html: featuredExcerpt }}
-                    onClick={(e) => e.stopPropagation()}
                   />
                 ) : (
                   <p className="text-gray-600 text-lg mb-4 line-clamp-3">{featuredExcerpt}</p>
@@ -435,17 +432,16 @@ function CompactBlogList({ minisite, articles, includeExcerptLinks }: { minisite
                 >
                   {article.title}
                 </h3>
-                {excerptContent && (
-                  useHtmlExcerpt ? (
-                    <div 
-                      className="text-sm text-gray-500 line-clamp-1 [&_a]:text-primary [&_a]:underline"
-                      dangerouslySetInnerHTML={{ __html: excerptContent }}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  ) : (
-                    <p className="text-sm text-gray-500 line-clamp-1">{excerptContent}</p>
-                  )
-                )}
+              {excerptContent && (
+                useHtmlExcerpt ? (
+                  <div 
+                    className="text-sm text-gray-500 line-clamp-1 [&_a]:text-primary [&_a]:underline"
+                    dangerouslySetInnerHTML={{ __html: excerptContent }}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-500 line-clamp-1">{excerptContent}</p>
+                )
+              )}
               </div>
               <span className="text-xs text-gray-400 whitespace-nowrap hidden sm:block">
                 {article.published_at && new Date(article.published_at).toLocaleDateString()}
