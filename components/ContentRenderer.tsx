@@ -1,10 +1,7 @@
-'use client';
-
-import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Minisite, MinisiteArticle, ContentBlock } from '@/lib/supabase';
+import type { Minisite, MinisiteArticle, ContentBlock } from '@/lib/supabase';
 import { ContactForm } from './ContactForm';
+import { FAQAccordionClient } from './FAQAccordionClient';
 
 // Fallback placeholder images
 const FALLBACK_IMAGES = {
@@ -14,38 +11,43 @@ const FALLBACK_IMAGES = {
   article: 'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=800&h=600&fit=crop&q=80',
 };
 
-// Safe Image component with error handling
-function SafeImage({ 
-  src, 
-  alt, 
+/** CDN-backed images only; native img keeps this module server-side (no huge RSC client bundle). */
+function SafeImage({
+  src,
+  alt,
   fallbackType = 'feature',
-  ...props 
-}: { 
-  src: string | undefined; 
-  alt: string; 
+  className = '',
+  fill,
+  priority,
+}: {
+  src?: string;
+  alt: string;
   fallbackType?: 'hero' | 'about' | 'feature' | 'article';
-  [key: string]: any;
+  className?: string;
+  fill?: boolean;
+  priority?: boolean;
 }) {
-  const [imgSrc, setImgSrc] = useState(src || FALLBACK_IMAGES[fallbackType]);
-  const [hasError, setHasError] = useState(false);
-
-  const handleError = () => {
-    if (!hasError) {
-      setHasError(true);
-      setImgSrc(FALLBACK_IMAGES[fallbackType]);
-    }
-  };
-
-  if (!imgSrc) {
-    return null;
+  const url = src || FALLBACK_IMAGES[fallbackType];
+  if (!url) return null;
+  const loading = priority ? 'eager' : 'lazy';
+  if (fill) {
+    return (
+      <img
+        src={url}
+        alt={alt}
+        className={`absolute inset-0 h-full w-full object-cover ${className}`}
+        loading={loading}
+        decoding="async"
+      />
+    );
   }
-
   return (
-    <Image
-      src={imgSrc}
+    <img
+      src={url}
       alt={alt}
-      onError={handleError}
-      {...props}
+      className={className}
+      loading={loading}
+      decoding="async"
     />
   );
 }
@@ -741,11 +743,15 @@ function TeamBlock({ data, minisite }: { data: any; minisite: Minisite }) {
 
 // FAQ Block
 function FAQBlock({ data, minisite }: { data: any; minisite: Minisite }) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const faqs = data.items || [];
   const layout = data.layout || 'accordion'; // accordion, grid, simple
   
   if (faqs.length === 0) return null;
+
+  const faqItems = faqs.map((faq: any) => ({
+    question: String(faq.question ?? ''),
+    answer: String(faq.answer ?? ''),
+  }));
 
   return (
     <section className="py-20 bg-gray-50">
@@ -762,29 +768,7 @@ function FAQBlock({ data, minisite }: { data: any; minisite: Minisite }) {
           <p className="text-gray-600 text-center mb-12">{data.subtitle}</p>
         )}
         
-        {layout === 'accordion' && (
-          <div className="space-y-4">
-            {faqs.map((faq: any, i: number) => (
-              <div key={i} className="card overflow-hidden">
-                <button
-                  onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between"
-                >
-                  <span className="font-semibold">{faq.question}</span>
-                  <svg 
-                    className={`w-5 h-5 transition-transform ${openIndex === i ? 'rotate-180' : ''}`} 
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {openIndex === i && (
-                  <div className="px-6 pb-4 text-gray-600">{faq.answer}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        {layout === 'accordion' && <FAQAccordionClient items={faqItems} />}
         
         {layout === 'grid' && (
           <div className="grid md:grid-cols-2 gap-6">

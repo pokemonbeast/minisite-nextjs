@@ -16,9 +16,13 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-// Cache for custom domain lookups (to reduce DB queries)
+// Cache for custom domain lookups (to reduce DB queries).
+// The dashboard invalidates downstream content via revalidateTag, but the
+// middleware runs in the Edge runtime and can't use unstable_cache, so we
+// keep an in-memory map here. 10 minutes is fine because changing a custom
+// domain mapping is a rare administrative action.
 const customDomainCache = new Map<string, { subdomain: string | null; expires: number }>();
-const CACHE_TTL = 60 * 1000; // 1 minute cache
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour per edge isolate (custom-domain mapping changes are rare)
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
